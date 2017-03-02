@@ -32,11 +32,7 @@ local function factory(args)
     local current_call          = args.current_call  or "curl -s 'http://api.openweathermap.org/data/2.5/weather?id=%s&units=%s&lang=%s&APPID=%s'"
     local forecast_call         = args.forecast_call or "curl -s 'http://api.openweathermap.org/data/2.5/forecast/daily?id=%s&units=%s&lang=%s&cnt=%s&APPID=%s'"
     local city_id               = args.city_id or 0 -- placeholder
-    local utc_offset            = args.utc_offset or
-                                  function ()
-                                      local now = os.time()
-                                      return os.difftime(now, os.time(os.date("!*t", now))) + ((os.date("*t").isdst and 1 or 0) * 3600)
-                                  end
+    local utc_offset            = args.utc_offset
     local units                 = args.units or "metric"
     local lang                  = args.lang or "en"
     local cnt                   = args.cnt or 5
@@ -69,7 +65,7 @@ local function factory(args)
         if not weather.notification_text then
             weather.update()
             weather.forecast_update()
-        end
+        endn
 
         weather.notification = naughty.notify({
             text    = weather.notification_text,
@@ -128,7 +124,7 @@ local function factory(args)
                 local sunset  = tonumber(weather_now["sys"]["sunset"])
                 local icon    = weather_now["weather"][1]["icon"]
                 local loc_m   = os.time { year = os.date("%Y"), month = os.date("%m"), day = os.date("%d"), hour = 0 }
-                local offset  = utc_offset()
+                local offset  = utc_offset
                 local utc_m   = loc_m - offset
 
                 if offset > 0 and (now - utc_m)>=86400 then
